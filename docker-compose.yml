@@ -30,7 +30,7 @@ services:
       - BEYLA_OPEN_PORT=8080,8000
       - BEYLA_SERVICE_NAME=app-demo
       - BEYLA_TRACE_PRINTER=text
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://10.11.1.73:4319
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://10.11.1.68:4319
       - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic YWRtaW46YWRtaW4=
     extra_hosts:
       - "host.docker.internal:host-gateway"

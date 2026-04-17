@@ -1,4 +1,4 @@
-FROM php:8.1-alpine
+FROM php:8.2-alpine
 
 # Set working directory
 WORKDIR /var/www/html
@@ -8,30 +8,49 @@ RUN apk add --no-cache \
     curl \
     libpng-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
-    oniguruma-dev
+    oniguruma-dev \
+    icu-dev \
+    git \
+    bash
 
 # Install PHP extensions
-RUN docker-php-ext-install bcmath gd mbstring
+RUN docker-php-ext-install \
+    bcmath \
+    gd \
+    mbstring \
+    pdo \
+    pdo_mysql \
+    zip \
+    intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy only composer files first to leverage Docker cache
+# Allow unlimited memory for Composer
+ENV COMPOSER_MEMORY_LIMIT=-1
+
+# Copy composer files first (cache optimization)
 COPY composer.json composer.lock ./
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+# Install PHP dependencies
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction \
+    --prefer-dist
 
-# Copy the rest of the application files
+# Copy the rest of the application
 COPY . .
 
-# Ensure correct permissions for Lumen
+# Fix permissions (Lumen/Laravel)
 RUN chown -R www-data:www-data /var/www/html/storage
 
 # Expose port
 EXPOSE 8000
 
-# Start PHP built-in server
+# Run app
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
