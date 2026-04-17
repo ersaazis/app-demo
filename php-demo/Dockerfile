@@ -3,20 +3,32 @@ FROM php:8.1-alpine
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies if needed
+# Install system dependencies
 RUN apk add --no-cache \
     curl \
     libpng-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    oniguruma-dev
 
 # Install PHP extensions
-# Note: Lumen needs some extensions, usually included in alpine or easy to add
-RUN docker-php-ext-install bcmath gd
+RUN docker-php-ext-install bcmath gd mbstring
 
-# Copy application files
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy only composer files first to leverage Docker cache
+COPY composer.json composer.lock ./
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+# Copy the rest of the application files
 COPY . .
+
+# Ensure correct permissions for Lumen
+RUN chown -R www-data:www-data /var/www/html/storage
 
 # Expose port
 EXPOSE 8000
