@@ -6,14 +6,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PHP_APP_URL=http://php-app:8000
+      - PHP_APP_URL=https://app.kavanix.com/php
+    extra_hosts:
+      - "app.kavanix.com:host-gateway"
     depends_on:
       - php-app
 
   php-app:
     build: ./php-demo
     ports:
-      - "8090:8080"
+      - "8090:8000"
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
