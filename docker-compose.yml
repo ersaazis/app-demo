@@ -12,11 +12,13 @@ services:
 
   php-app:
     build: ./php-demo
+    ports:
+      - "8090:8080"
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
     # Lumen default port when using php -S is usually 8000
-    command: ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+    command: [ "php", "-S", "0.0.0.0:8000", "-t", "public" ]
 
   beyla:
     image: grafana/beyla:latest
