@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  go-app:
+    build: ./go-demo
+    ports:
+      - "8080:8080"
+    environment:
+      - PHP_APP_URL=http://php-app:8000
+    depends_on:
+      - php-app
+
+  php-app:
+    build: ./php-demo
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    # Lumen default port when using php -S is usually 8000
+    command: ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+
+  beyla:
+    image: grafana/beyla:latest
+    privileged: true
+    pid: host
+    environment:
+      - BEYLA_OPEN_PORT=8080,8000
+      - BEYLA_SERVICE_NAME=app-demo
+      - BEYLA_TRACE_PRINTER=text
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://10.11.1.73:4319
+      - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic YWRtaW46YWRtaW4=
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -1,0 +1,10 @@
+- buat aplikasi go di dir go-demo
+- buat aplikasi php lumen di dir php-demo
+- simulasikan di go /health respose 200
+- simulasikan di go /some-error error 500
+- simulasikan di go /some-load call lumen /go response 200
+- simulasikan di go /some-call-error call lumen /query response 500
+- simulasikan di lumen /health respose 200
+- simulasikan di lumen /go respose 200 tapi ada sleep 5s
+- simulasikan di lumen /query response 500 error query ke db yang koneksinya error
+- buatkan docker composenya
